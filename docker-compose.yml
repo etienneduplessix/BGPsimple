@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  gns3:
+    build:
+      context: .
+    container_name: gns3-server
+    ports:
+      - "3080:3080"  # Web interface
+      - "22:22"      # Optional SSH port
+    volumes:
+      - ./data:/data  # Persistent storage for GNS3 projects
+      - /dev:/dev     # Required for network device interaction
+      - /lib/modules:/lib/modules:ro # Pass the host's kernel modules for networking
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    environment:
+      - GNS3_SERVER_HOST=0.0.0.0
+      - GNS3_SERVER_PORT=3080
