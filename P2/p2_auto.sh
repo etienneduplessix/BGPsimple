@@ -7,7 +7,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 containers=("host_ffarkas-1" "host_ffarkas-2" "router_ffarkas-1" "router_ffarkas-2")
-routers=("router_ffarkas-1" "router_ffarkas-2")
+routers=("${containers[2]}" "${containers[3]}")
 
 # --> INFO
 display_info() {
