@@ -50,5 +50,5 @@ display_info() {
 
 replace_static_setup "239.1.1.1"
 
-echo -e "\n${GREEN}[ROUTER_RECONFIG]${NC} dynamic reconfiguration done"
+echo -e "\n${GREEN}[ROUTER_RECONFIG]${NC} dynamic reconfiguration completed"
 display_info

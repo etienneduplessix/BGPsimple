@@ -17,7 +17,10 @@ build_images() {
 }
 
 container_info() {
-    if ! pgrep -f "gns3" > /dev/null; then
+    if ! pgrep -f "docker" > /dev/null; then
+        echo -e "\n${RED}[ERROR]${NC} Docker is not running\n"
+        exit 1
+    elif ! pgrep -f "gns3" > /dev/null; then
         echo -e "\n${RED}[ERROR]${NC} GNS3 is not running\n"
         exit 1
     fi
