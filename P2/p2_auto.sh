@@ -6,11 +6,11 @@ BLUE='\033[1;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-containers=("host_ffarkas-1" "host_ffarkas-2" "router_ffarkas-1" "router_ffarkas-2")
-routers=("${containers[2]}" "${containers[3]}")
+hostnames=("host_ffarkas-1" "host_ffarkas-2" "router_ffarkas-1" "router_ffarkas-2")
+containers=()
 
-# --> INFO
-display_info() {
+# --> CHECK SERVICES
+check_services() {
     if ! pgrep -f "docker" > /dev/null; then
         echo -e "\n${RED}[ERROR]${NC} Docker is not running\n"
         exit 1
@@ -18,27 +18,52 @@ display_info() {
         echo -e "\n${RED}[ERROR]${NC} GNS3 is not running\n"
         exit 1
     fi
+}
+
+# --> ASSIGN CONTAINERS
+fetch_containers() {
+    echo -e "\n${YELLOW}[MATCHING]${NC} matching containers to hostnames..."
+
+    for device_hostname in "${hostnames[@]}"; do
+        for container_id in $(docker ps -q); do
+            hostname=$(docker inspect --format '{{.Config.Hostname}}' "$container_id")
+            if [[ "$hostname" == "$device_hostname" ]]; then
+                container_name=$(docker inspect --format '{{.Name}}' "$container_id" | sed 's|^/||')
+                echo "${hostname}: ${container_name}"
+                containers+=("$container_name")
+            fi
+        done
+    done
+}
+
+# --> INFO
+display_info() {
+    check_services
+    fetch_containers
 
     echo -e "\n${BLUE}[host_ffarkas-1]${NC}"
     docker exec "${containers[0]}" sh -c "ifconfig eth1"
-    docker exec "${containers[0]}" sh -c "bridge fdb show dev br0"
 
     echo -e "\n${BLUE}[host_ffarkas-2]${NC}"
     docker exec "${containers[1]}" sh -c "ifconfig eth1"
-    docker exec "${containers[1]}" sh -c "bridge fdb show dev br0"
 
     echo -e "\n${BLUE}[router_ffarkas-1]${NC}"
     docker exec "${containers[2]}" sh -c "ip -d link show vxlan10"
+    docker exec "${containers[2]}" sh -c "brctl showmacs br0"
 
     echo -e "\n${BLUE}[router_ffarkas-2]${NC}"
     docker exec "${containers[3]}" sh -c "ip -d link show vxlan10"
+    docker exec "${containers[3]}" sh -c "brctl showmacs br0"
 
     echo ""
 }
 
 # --> DYNAMIC RECONFIG
 reconfigure_static_setup() {
+    check_services
+    fetch_containers
     local IP_range=$1
+    local routers=("${containers[2]}" "${containers[3]}")
 
     for router_container in "${routers[@]}"; do
         echo -e "\n${YELLOW}[ROUTER_RECONFIG]${NC} reconfiguring $router_container..."
@@ -75,6 +100,7 @@ configure_router() {
     local host_remote=$4
     local bridge_ip=$5
 
+    check_services
     echo -e "\n${YELLOW}[ROUTER_CONFIG]${NC} configuring $router_container..."
     set -x
     docker exec "$router_container" sh -c "ip addr add $router_ip dev eth0"
@@ -91,6 +117,8 @@ configure_router() {
 }
 
 static_config() {
+    check_services
+    fetch_containers
     configure_host "${containers[0]}" "30.1.1.1/24"
     configure_host "${containers[1]}" "30.1.1.2/24"
     configure_router "${containers[2]}" "10.1.1.1/24" "10.1.1.1" "10.1.1.2" "10.1.1.5/24"
