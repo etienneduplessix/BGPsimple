@@ -12,8 +12,8 @@ build_images() {
     fi
 
     echo -e "\n${GREEN}[BUILD]${NC} building images...\n"
-    docker buildx build --tag host_ffarkas --file host_ffarkas.Dockerfile --load .
-    docker buildx build --tag router_ffarkas --file router_ffarkas.Dockerfile --load .
+    docker buildx build --tag host_ffarkas --file _ffarkas-1_host --load .
+    docker buildx build --tag router_ffarkas --file _ffarkas-2 --load .
 }
 
 container_info() {
