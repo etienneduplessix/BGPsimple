@@ -64,14 +64,19 @@ reconfigure_static_setup() {
     fetch_containers
     local IP_range=$1
     local routers=("${containers[2]}" "${containers[3]}")
+    local vxlan_ips=("$2" "$3")
 
-    for router_container in "${routers[@]}"; do
+    for i in "${!routers[@]}"; do
+        local router_container="${routers[$i]}"
+
         echo -e "\n${YELLOW}[ROUTER_RECONFIG]${NC} reconfiguring $router_container..."
         set -x
+
         docker exec "$router_container" sh -c "ip link delete vxlan10"
         docker exec "$router_container" sh -c "ip link delete br0"
 
         docker exec "$router_container" sh -c "ip link add vxlan10 type vxlan id 10 dstport 4789 dev eth0 group $IP_range"
+        docker exec "$router_container" sh -c "ip addr add ${vxlan_ips[$i]} dev vxlan10"
         docker exec "$router_container" sh -c "ip link set dev vxlan10 up"
 
         docker exec "$router_container" sh -c "ip link add br0 type bridge"
@@ -99,7 +104,7 @@ configure_router() {
     local router_ip=$2
     local host_local=$3
     local host_remote=$4
-    local bridge_ip=$5
+    local vxlan_ip=$5
     local device=$6
 
     check_services
@@ -107,7 +112,7 @@ configure_router() {
     set -x
     docker exec "$router_container" sh -c "ip addr add $router_ip dev eth0"
     docker exec "$router_container" sh -c "ip link add vxlan10 type vxlan id 10 dstport 4789 dev eth0 local $host_local remote $host_remote"
-    docker exec "$router_container" sh -c "ip addr add $bridge_ip dev vxlan10"
+    docker exec "$router_container" sh -c "ip addr add $vxlan_ip dev vxlan10"
     docker exec "$router_container" sh -c "ip link set dev vxlan10 up"
 
     docker exec "$router_container" sh -c "ip link add br0 type bridge"
@@ -123,8 +128,8 @@ static_config() {
     fetch_containers
     configure_host "${containers[0]}" "30.1.1.1/24" "${hostnames[0]}"
     configure_host "${containers[1]}" "30.1.1.2/24" "${hostnames[1]}"
-    configure_router "${containers[2]}" "10.1.1.1/24" "10.1.1.1" "10.1.1.2" "10.1.1.5/24" "${hostnames[2]}"
-    configure_router "${containers[3]}" "10.1.1.2/24" "10.1.1.2" "10.1.1.1" "10.1.1.6/24" "${hostnames[3]}"
+    configure_router "${containers[2]}" "10.1.1.1/24" "10.1.1.1" "10.1.1.2" "20.1.1.1/24" "${hostnames[2]}"
+    configure_router "${containers[3]}" "10.1.1.2/24" "10.1.1.2" "10.1.1.1" "20.1.1.2/24" "${hostnames[3]}"
 }
 
 # --> USAGE AND ROUTINE
@@ -147,7 +152,7 @@ if [ "$1" = "static" ]; then
     echo -e "\n${GREEN}[S-CONFIG]${NC} static configuration completed\n"
 elif [ "$1" = "dynamic" ]; then
     echo -e "\n${RED}--> starting dynamic multicast reconfiguration${NC}"
-    reconfigure_static_setup "239.1.1.1"
+    reconfigure_static_setup "239.1.1.1" "20.1.1.1/24" "20.1.1.2/24"
     echo -e "\n${GREEN}[D-CONFIG]${NC} dynamic reconfiguration completed\n"
 elif [ "$1" = "info" ]; then
     echo -e "\n${RED}--> displaying network configuration${NC}"
