@@ -41,17 +41,17 @@ display_info() {
     check_services
     fetch_containers
 
-    echo -e "\n${BLUE}[host_ffarkas-1]${NC}"
+    echo -e "\n${BLUE}[${hostnames[0]}]${NC}"
     docker exec "${containers[0]}" sh -c "ifconfig eth1"
 
-    echo -e "\n${BLUE}[host_ffarkas-2]${NC}"
+    echo -e "\n${BLUE}[${hostnames[1]}]${NC}"
     docker exec "${containers[1]}" sh -c "ifconfig eth1"
 
-    echo -e "\n${BLUE}[router_ffarkas-1]${NC}"
+    echo -e "\n${BLUE}[${hostnames[2]}]${NC}"
     docker exec "${containers[2]}" sh -c "ip -d link show vxlan10"
     docker exec "${containers[2]}" sh -c "brctl showmacs br0"
 
-    echo -e "\n${BLUE}[router_ffarkas-2]${NC}"
+    echo -e "\n${BLUE}[${hostnames[3]}]${NC}"
     docker exec "${containers[3]}" sh -c "ip -d link show vxlan10"
     docker exec "${containers[3]}" sh -c "brctl showmacs br0"
 
@@ -87,7 +87,8 @@ reconfigure_static_setup() {
 configure_host() {
     local host_container=$1
     local ip=$2
-    echo -e "\n${YELLOW}[HOST_CONFIG]${NC} configuring $host_container..."
+    local device=$3
+    echo -e "\n${YELLOW}[HOST_CONFIG]${NC} configuring $device..."
     set -x
     docker exec "$host_container" sh -c "ip addr add $ip dev eth1"
     set +x
@@ -99,9 +100,10 @@ configure_router() {
     local host_local=$3
     local host_remote=$4
     local bridge_ip=$5
+    local device=$6
 
     check_services
-    echo -e "\n${YELLOW}[ROUTER_CONFIG]${NC} configuring $router_container..."
+    echo -e "\n${YELLOW}[ROUTER_CONFIG]${NC} configuring $device..."
     set -x
     docker exec "$router_container" sh -c "ip addr add $router_ip dev eth0"
     docker exec "$router_container" sh -c "ip link add vxlan10 type vxlan id 10 dstport 4789 dev eth0 local $host_local remote $host_remote"
@@ -119,10 +121,10 @@ configure_router() {
 static_config() {
     check_services
     fetch_containers
-    configure_host "${containers[0]}" "30.1.1.1/24"
-    configure_host "${containers[1]}" "30.1.1.2/24"
-    configure_router "${containers[2]}" "10.1.1.1/24" "10.1.1.1" "10.1.1.2" "10.1.1.5/24"
-    configure_router "${containers[3]}" "10.1.1.2/24" "10.1.1.2" "10.1.1.1" "10.1.1.6/24"
+    configure_host "${containers[0]}" "30.1.1.1/24" "${hostnames[0]}"
+    configure_host "${containers[1]}" "30.1.1.2/24" "${hostnames[1]}"
+    configure_router "${containers[2]}" "10.1.1.1/24" "10.1.1.1" "10.1.1.2" "10.1.1.5/24" "${hostnames[2]}"
+    configure_router "${containers[3]}" "10.1.1.2/24" "10.1.1.2" "10.1.1.1" "10.1.1.6/24" "${hostnames[3]}"
 }
 
 # --> USAGE AND ROUTINE
