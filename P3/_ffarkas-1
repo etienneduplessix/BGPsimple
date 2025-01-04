@@ -1,5 +1,6 @@
-vtysh
+vtysh << END_CONFIG
 configure
+no ipv6 forwarding
 !
 interface eth0
  ip address 10.1.1.1/30
@@ -29,3 +30,4 @@ router ospf
 end
 write memory
 exit
+END_CONFIG

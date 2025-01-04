@@ -4,8 +4,9 @@ ip link add br0 type bridge
 ip link set dev br0 up
 ip link set eth0 master br0
 ip link set vxlan10 master br0
-vtysh
+vtysh << END_CONFIG
 configure
+no ipv6 forwarding
 !
 interface eth2
  ip address 10.1.1.10/30
@@ -28,3 +29,4 @@ router ospf
 end
 write memory
 exit
+END_CONFIG
