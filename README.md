@@ -77,15 +77,15 @@
 ## BADASS - PART 2
 | **Node**            | **Type**         | **Setup**                           | **Communication Method**    |
 |---------------------|----------------|-------------------------------------|-----------------------------|
-| `_ffarkas-1_s`     | Static VXLAN    | Fixed remote IP (`10.1.1.2`)       | Manual point-to-point       |
-| `_ffarkas-2_s`     | Static VXLAN    | Fixed remote IP (`10.1.1.1`)       | Manual point-to-point       |
-| `_ffarkas-1_g`     | Dynamic VXLAN   | Multicast group `239.1.1.1`        | Auto-discovery              |
-| `_ffarkas-2_g`     | Dynamic VXLAN   | Multicast group `239.1.1.1`        | Auto-discovery              |
-| `_ffarkas-1_host`  | Host            | IP: `30.1.1.1`                     | Connected via bridge (`br0`) |
-| `_ffarkas-2_host`  | Host            | IP: `30.1.1.2`                     | Connected via bridge (`br0`) |
+| _ffarkas-1_s     | static VXLAN    | fixed remote IP 10.1.1.2        | manual point-to-point       |
+| _ffarkas-2_s     | static VXLAN    | fixed remote IP 10.1.1.1        | manual point-to-point       |
+| _ffarkas-1_g     | dynamic VXLAN   | multicast group 239.1.1.1        | auto-discovery              |
+| _ffarkas-2_g     | dynamic VXLAN   | multicast group 239.1.1.1        | auto-discovery              |
+| _ffarkas-1_host  | host            | IP 30.1.1.1                     | connected via bridge (br0) |
+| _ffarkas-2_host  | host            | IP 30.1.1.2                     | connected via bridge (br0) |
 
 
-## Part 3: BGP-EVPN
+## BGP-EVPN
 **BGP-EVPN** *(Ethernet VPN)* enables Layer 2 overlay networks using BGP extensions. This type of network enables data centers to connect seamlessly.
 - Even if two devices are in different physical locations, BGP-EVPN makes them feel like they are on the same local network.
 - It reduces the need for manual configuration by automatically sharing important information like MAC and IP addresses.
@@ -122,3 +122,17 @@
 <div style="text-align: center;">
   <img src="./resources/routes.png" alt="GNS3" style="width:35%;">
 </div>
+
+## BADASS - PART 3
+| **Node**        | **Role**                   | **BGP Configuration**                                  | **OSPF Configuration**          | **VXLAN Configuration** |
+|----------------|--------------------------|------------------------------------------------------|--------------------------------|-------------------------|
+| _ffarkas-1 | Route Reflector (RR)      | acts as BGP controller, redistributes EVPN routes | OSPF enabled for all networks | no VXLAN setup          |
+| _ffarkas-2 | Leaf Router (VTEP)        | connects to RR, advertises VXLAN    | OSPF for internal links       | VXLAN ID 10 configured  |
+| _ffarkas-3 | Leaf Router (VTEP)        | connects to RR, advertises VXLAN    | OSPF for internal links       | VXLAN ID 10 configured  |
+| _ffarkas-4 | Leaf Router (VTEP)        | connects to RR, advertises VXLAN    | OSPF for internal links       | VXLAN ID 10 configured  |
+
+- <u>BGP</u>: exchanges network reachability information between routers
+- <u>EVPN</u>: manages Layer 2 connectivity over Layer 3 networks
+- <u>OSPF</u> (as IGP): distributes internal routing information
+- <u>VXLAN</u>: extends Layer 2 networks across different locations
+- <u>RR</u>: allows a central router to distribute routing information to other routers
