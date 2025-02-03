@@ -1,10 +1,23 @@
+# assign IP address 10.1.1.1 to eth0 (physical interface)
 ip addr add 10.1.1.1/24 dev eth0
+
+# create VXLAN interface (ID 10) using multicast group (no manually defined remote IPs)
 ip link add vxlan10 type vxlan id 10 dstport 4789 dev eth0 group 239.1.1.1
+
+# assign IP 20.1.1.1 to the VXLAN interface
 ip addr add 20.1.1.1/24 dev vxlan10
+
+# activate the VXLAN interface
 ip link set dev vxlan10 up
 
+# create a bridge named br0 to connect VXLAN with other interfaces
 ip link add br0 type bridge
+
+# activate the bridge
 ip link set dev br0 up
 
+# connect eth1 (physical interface) to the bridge
 ip link set eth1 master br0
+
+# connect the VXLAN interface to the bridge
 ip link set vxlan10 master br0

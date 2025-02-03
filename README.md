@@ -23,7 +23,7 @@
 </div>
 
 
-## Part 1: GNS3 Configuration
+## GNS3 Configuration
 **Packet routing software** *(Quagga, Zebra, etc.)* is used for routing packets based on protocols like OSPF, BGP, or RIP.
 - Tells data packets how to travel between networks.
 - **EX:** Imagine you're sending a letter. Packet routing software is like a postal worker figuring out the shortest and most efficient route to deliver your letter.
@@ -48,7 +48,7 @@
 </div>
 
 
-## Part 2: VXLAN
+## VXLAN
 **VXLAN** *(Virtual Extensible LAN)* extends VLAN capabilities over Layer 3, enabling larger scalability by using a 24-bit ID.
 - VLAN connects devices as if they’re in the same local network, even if they’re not.
 - VXLAN expands VLANs over the Internet by using encapsulation. It supports up to 16 million networks compared to VLAN’s 4,096.
@@ -72,6 +72,17 @@
 <div style="text-align: center;">
   <img src="./resources/devices.png" alt="GNS3" style="width:60%;">
 </div>
+
+
+## BADASS - PART 2
+| **Node**            | **Type**         | **Setup**                           | **Communication Method**    |
+|---------------------|----------------|-------------------------------------|-----------------------------|
+| `_ffarkas-1_s`     | Static VXLAN    | Fixed remote IP (`10.1.1.2`)       | Manual point-to-point       |
+| `_ffarkas-2_s`     | Static VXLAN    | Fixed remote IP (`10.1.1.1`)       | Manual point-to-point       |
+| `_ffarkas-1_g`     | Dynamic VXLAN   | Multicast group `239.1.1.1`        | Auto-discovery              |
+| `_ffarkas-2_g`     | Dynamic VXLAN   | Multicast group `239.1.1.1`        | Auto-discovery              |
+| `_ffarkas-1_host`  | Host            | IP: `30.1.1.1`                     | Connected via bridge (`br0`) |
+| `_ffarkas-2_host`  | Host            | IP: `30.1.1.2`                     | Connected via bridge (`br0`) |
 
 
 ## Part 3: BGP-EVPN
