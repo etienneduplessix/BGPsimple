@@ -1,5 +1,8 @@
+# using Alpine Linux as base image
 FROM alpine:latest
 
+# update and upgrade package lists
 RUN apk update && apk upgrade
 
+# install busybox (basic Unix tools) and iproute2 (for managing network interfaces and routing)
 RUN apk add --no-cache busybox iproute2

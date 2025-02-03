@@ -1,9 +1,12 @@
+# using official FRRouting image (open-source routing software)
 FROM frrouting/frr:latest
 
+# update and upgrade package lists
 RUN apk update && apk upgrade
 
+# install busybox (basic Unix tools)
 RUN apk add --no-cache busybox
 
+# copy custom FRR configuration files
 COPY ./config/vtysh /etc/frr/vtysh.conf
-
 COPY ./config/daemons /etc/frr/daemons
