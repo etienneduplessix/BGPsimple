@@ -9,18 +9,14 @@
 - Decides the best path for data to travel between networks worldwide.
 - **EX:** If you're streaming Netflix, BGP ensures the fastest and most efficient path for the video to reach your device, even if it has to cross multiple networks.
 
-<div style="text-align: center;">
-  <img src="./resources/GNS3.png" alt="GNS3" style="width:50%;">
-</div>
+![GNS3](./resources/GNS3.png)
 
 
 ## OSI layers
 **Layer 2** *(Data Link Layer)* is responsible for local node communication and MAC address handling within the same network. **Layer 3** *(Network Layer)* handles IP routing and communication between different networks using routers.
 - **EX:** If your laptop sends a file to another laptop in the same Wi-Fi network, Layer 2 handles it. If you're sending an email to someone on a different continent, Layer 3 takes over.
 
-<div style="text-align: center;">
-  <img src="./resources/layers.png" alt="GNS3" style="width:40%;">
-</div>
+![OSI_layers](./resources/layers.png)
 
 
 ## GNS3 Configuration
@@ -43,9 +39,7 @@
 **Busybox** is a lightweight software providing essential Unix tools in a single binary.
 - **EX:** If a full Linux system is like a big Swiss Army knife, Busybox is a compact version with just the essential tools.
 
-<div style="text-align: center;">
-  <img src="./resources/routing.png" alt="GNS3" style="width:55%;">
-</div>
+![Routing](./resources/routing.png)
 
 
 ## VXLAN
@@ -54,9 +48,7 @@
 - VXLAN expands VLANs over the Internet by using encapsulation. It supports up to 16 million networks compared to VLAN’s 4,096.
 - **EX:** VLAN is like a private chat group, while VXLAN is a private chat group that works across countries.
 
-<div style="text-align: center;">
-  <img src="./resources/vxlan.png" alt="GNS3" style="width:45%;">
-</div>
+![VXLAN](./resources/vxlan.png)
 
 
 ## Network devices
@@ -69,9 +61,7 @@
 **Broadcast** sends data to all devices on a network. **Multicast** sends data only to subscribed devices.
 - **EX:** Broadcast is like shouting in a room, and multicast is like calling only your friends.
 
-<div style="text-align: center;">
-  <img src="./resources/devices.png" alt="GNS3" style="width:60%;">
-</div>
+![Network_devices](./resources/devices.png)
 
 
 ## BADASS - PART 2
@@ -90,9 +80,7 @@
 - Even if two devices are in different physical locations, BGP-EVPN makes them feel like they are on the same local network.
 - It reduces the need for manual configuration by automatically sharing important information like MAC and IP addresses.
 
-<div style="text-align: center;">
-  <img src="./resources/evpn.png" alt="GNS3" style="width:70%;">
-</div>
+![BGP-EVPN](./resources/evpn.png)
 
 
 ## Network optimization
@@ -106,9 +94,7 @@
 **VNI** *(VXLAN Network Identifier)* identifies each VXLAN segment.
 - VNI (VXLAN Network Identifier) is like a network’s ID tag, helping keep traffic separate.
 
-<div style="text-align: center;">
-  <img src="./resources/optimization.png" alt="GNS3" style="width:55%;">
-</div>
+![Network_optimization](./resources/optimization.png)
 
 ## Network routes
 **Type 2 routes** handle MAC-to-IP mappings for devices.
@@ -119,9 +105,7 @@
 - They help manage traffic that is sent to multiple devices in the network (e.g., updates, group messages).
 - EX: If one device sends a "hello" message to all devices in the network, the Type 3 route ensures it gets delivered efficiently without clogging the network.
 
-<div style="text-align: center;">
-  <img src="./resources/routes.png" alt="GNS3" style="width:35%;">
-</div>
+![Network_routes](./resources/routes.png)
 
 ## BADASS - PART 3
 | **Node**        | **Role**                   | **BGP Configuration**                                  | **OSPF Configuration**          | **VXLAN Configuration** |
